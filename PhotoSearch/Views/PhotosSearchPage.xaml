@@ -1,0 +1,243 @@
+﻿<prismMvvm:SessionStateAwarePage x:Class="PhotoSearch.Views.PhotosSearchPage"
+                                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                 xmlns:local="using:PhotoSearch.Views"
+                                 xmlns:prismMvvm="using:Prism.Windows.Mvvm"
+                                 prismMvvm:ViewModelLocator.AutoWireViewModel="True"
+                                 xmlns:Converters="using:PhotoSearch.Converters"
+                                 xmlns:ToolkitControls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+                                 xmlns:Controls="using:PhotoSearch.Controls"
+                                 xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+                                 xmlns:behaviors="using:Microsoft.Toolkit.Uwp.UI.Animations.Behaviors"
+                                 xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+                                 xmlns:media="using:Microsoft.Xaml.Interactions.Media"
+                                 xmlns:Triggers="using:PhotoSearch.Triggers"
+                                 xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+                                 xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
+                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                 mc:Ignorable="d">
+    <prismMvvm:SessionStateAwarePage.Resources>
+        <Converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Style x:Key="PhotoGridViewItemStyle"
+               TargetType="GridViewItem">
+            <Setter Property="Foreground"
+                    Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+            <Setter Property="Background"
+                    Value="Transparent" />
+            <Setter Property="Padding"
+                    Value="0" />
+            <Setter Property="MinHeight"
+                    Value="0" />
+            <Setter Property="MinWidth"
+                    Value="0" />
+            <Setter Property="Padding"
+                    Value="0" />
+            <Setter Property="UseSystemFocusVisuals"
+                    Value="True" />
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Left" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Stretch" />
+            <Setter Property="Transitions"
+                    Value="{x:Null}"></Setter>
+            <Setter Property="animations:Implicit.ShowAnimations">
+                <Setter.Value>
+                    <animations:AnimationCollection>
+                        <animations:OpacityAnimation Duration="0:0:0.2"
+                                                     Delay="0:0:0.2"
+                                                     SetInitialValueBeforeDelay="True"
+                                                     From="0"
+                                                     To="1"></animations:OpacityAnimation>
+                    </animations:AnimationCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GridViewItem">
+                        <Grid x:Name="LayoutRoot"
+                              Background="{TemplateBinding Background}"
+                              Control.IsTemplateFocusTarget="True">
+                            <!--  Wrap SelectionIndicator in a grid so that its offset is 0,0 - this enables the offset animation.  -->
+                            <Grid HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Bottom">
+                                <Rectangle x:Name="SelectionIndicator"
+                                           Height="3"
+                                           Fill="{ThemeResource SystemControlHighlightAccentBrush}"
+                                           Opacity="0.0" />
+                            </Grid>
+                            <ContentPresenter x:Name="ContentPresenter"
+                                              Grid.Column="1"
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              ContentTransitions="{TemplateBinding ContentTransitions}" />
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="PointerStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Target="SelectionIndicator.Opacity"
+                                                    Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOverSelected">
+                                        <VisualState.Setters>
+                                            <Setter Target="SelectionIndicator.Opacity"
+                                                    Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="PressedSelected">
+                                        <VisualState.Setters>
+                                            <Setter Target="SelectionIndicator.Opacity"
+                                                    Value="1.0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="DisabledStates">
+                                    <VisualState x:Name="Enabled" />
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+    </prismMvvm:SessionStateAwarePage.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              Grid.RowSpan="3"
+              x:Name="SearchGrid"
+              Margin="0 10 0 0"
+              RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="SearchGridTransform" />
+            </Grid.RenderTransform>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Text="{Binding SearchTag, Mode=TwoWay}"
+                     InputScope="Search"
+                     MinWidth="300"
+                     BorderBrush="RoyalBlue" />
+            <Button Grid.Column="1"
+                    Content="Search"
+                    Margin="10 0"
+                    Background="RoyalBlue"
+                    Foreground="White"
+                    Command="{Binding SearchCommand}">
+                <!--<Interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Click">
+                        <media:ControlStoryboardAction ControlStoryboardOption="Play"
+                                                       Storyboard="{StaticResource StartAnimation}" />
+                    </core:EventTriggerBehavior>
+                </Interactivity:Interaction.Behaviors>-->
+            </Button>
+        </Grid>
+
+        <ProgressBar Grid.Row="1"
+                     IsIndeterminate="True"
+                     Value="5"
+                     Visibility="{Binding PhotosCollection.IsLoading, FallbackValue=Collapsed, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Controls:PhotosGridView x:Name="PhotosGridView"
+                                 Grid.Row="2"
+                                 Visibility="Collapsed"
+                                 IsItemClickEnabled="True"
+                                 SelectionMode="None"
+                                 animations:Connected.ListItemElementName="PhotoItem"
+                                 animations:Connected.ListItemKey="listItem"
+                                 animations:ReorderGridAnimation.Duration="300"
+                                 ItemsSource="{Binding PhotosCollection}"
+                                 ItemContainerStyle="{StaticResource PhotoGridViewItemStyle}">
+            <Interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemClick">
+                    <core:InvokeCommandAction Command="{Binding PhotoClickedCommand}" />
+                </core:EventTriggerBehavior>
+            </Interactivity:Interaction.Behaviors>
+            <Controls:PhotosGridView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="200"
+                          Height="200"
+                          extensions:VisualEx.CenterPoint="40,60,0">
+                        <ToolkitControls:DropShadowPanel HorizontalContentAlignment="Stretch"
+                                                         VerticalContentAlignment="Stretch"
+                                                         BlurRadius="30"
+                                                         ShadowOpacity="0.6"
+                                                         OffsetY="3"
+                                                         BorderThickness="0"
+                                                         extensions:VisualEx.Opacity="0"
+                                                         Visibility="Collapsed">
+                            <Border></Border>
+                        </ToolkitControls:DropShadowPanel>
+                        <ToolkitControls:ImageEx IsCacheEnabled="False"
+                                                 x:Name="PhotoItem"
+                                                 Stretch="UniformToFill"
+                                                 Margin="7"
+                                                 PlaceholderStretch="Uniform"
+                                                 PlaceholderSource="/Assets/Photoplaceholder.png"
+                                                 Source="{Binding ThumbnailURL}" />
+
+                    </Grid>
+                </DataTemplate>
+            </Controls:PhotosGridView.ItemTemplate>
+
+        </Controls:PhotosGridView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+                <VisualState>
+
+                    <VisualState.StateTriggers>
+                        <Triggers:SearchPageStateTrigger IsSearchStateActive="{Binding IsSearchStateActive}" />
+                    </VisualState.StateTriggers>
+                    <Storyboard>
+                        <DoubleAnimation To="0"
+                                         Duration="0:0:0.5"
+                                         EnableDependentAnimation="True"
+                                         Storyboard.TargetName="SearchGridTransform"
+                                         Storyboard.TargetProperty="Y">
+                            <DoubleAnimation.EasingFunction>
+                                <ExponentialEase />
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PhotosGridView"
+                                                       Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0"
+                                                    Value="Visible" />
+                        </ObjectAnimationUsingKeyFrames>
+
+                    </Storyboard>
+                </VisualState>
+
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</prismMvvm:SessionStateAwarePage>
